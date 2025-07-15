@@ -1,3 +1,7 @@
+import processing.svg.*;
+
+boolean saveSVG = false;
+
 // === CONFIGURATION ===
 float radius = 60;           // Hexagon radius
 float arcSpacing = 5;        // Gap between concentric arcs
@@ -7,23 +11,34 @@ float outlineWeight = 1;     // Hexagon outline stroke weight
 
 float bezierCurveBend = 0.7; // From 0 (straight line) to ~0.8+ for more wiggle
 
-color arcColorStart = color(0, 128, 192);   // Inner/central arc
-color arcColorEnd = color(220, 192, 0);   // Outer arcs
+color arcColorStart = color(0, 128, 128);   // Inner/central arc
+color arcColorEnd = color(180, 180, 220);   // Outer arcs
 
 void setup() {
   size(1200, 800);
-  noLoop();         // Prevent draw() from looping automatically
-  drawPattern();    // Draw once at start
+  noLoop();
+  drawPattern(); // Initial render
 }
 
 void draw() {
-  // Nothing needed here — drawPattern() is called manually
+  if (saveSVG) {
+    beginRecord(SVG, "truchet_output.svg");
+    background(255); // Ensure white background in SVG
+    drawPattern();
+    endRecord();
+    println("SVG saved.");
+    saveSVG = false;
+  } else {
+    drawPattern();
+  }
 }
 
 void keyPressed() {
   if (key == ' ') {
-    drawPattern();  // Generate new pattern
-    redraw();       // Refresh the screen (important when using noLoop)
+    redraw(); // triggers draw(), which now runs drawPattern()
+  } else if (key == 's' || key == 'S') {
+    saveSVG = true;
+    redraw(); // this triggers the SVG export in draw()
   }
 }
 
